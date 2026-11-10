@@ -2,4 +2,3 @@
 <defs><linearGradient id="metal"><stop stop-color="#20374e"/><stop offset=".4" stop-color="#3d5870"/><stop offset="1" stop-color="#14283e"/></linearGradient><pattern id="panels" width="50" height="48" patternUnits="userSpaceOnUse"><path d="M7 0h36v48H7z" fill="url(#metal)"/><path d="M9 4h32M9 43h32" stroke="#718699"/><path d="M14 12v22m22-22v22" stroke="#73e9ed" opacity=".5"/></pattern></defs>
 <g transform="translate(0 512) scale(1 -1)"><path d="M1 0h48v511H1z" fill="#17293c" stroke="#f3bc64" stroke-width="2"/><path d="M3 0h44v498H3z" fill="url(#panels)"/><path d="M1 497h48v14H1z" fill="#f3bc64"/><path d="M5 499l8 10m3-10 8 10m3-10 8 10m3-10 7 9" stroke="#293747" stroke-width="4"/><path d="M3 494h44" stroke="#fff0b3" stroke-width="2"/>
 </g></svg>
-
