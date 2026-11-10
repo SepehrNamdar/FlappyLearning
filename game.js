@@ -31,6 +31,11 @@ var images = {};
 
 var speed = function(fps){
 	FPS = parseInt(fps);
+	var controls = document.querySelectorAll("[data-fps]");
+	for(var i = 0; i < controls.length; i++){
+		controls[i].setAttribute("aria-pressed", controls[i].getAttribute("data-fps") == FPS ? "true" : "false");
+	}
+	document.querySelector("#speed-label").textContent = FPS == 0 ? "MAX / Unlimited" : FPS / 60 + "× / " + (FPS == 60 ? "Real time" : "Accelerated");
 }
 
 var loadImages = function(sources, callback){
@@ -137,6 +142,12 @@ var Game = function(){
 	this.backgroundSpeed = 0.5;
 	this.backgroundx = 0;
 	this.maxScore = 0;
+	this.telemetry = {
+		score: document.querySelector("#score"),
+		best: document.querySelector("#best-score"),
+		generation: document.querySelector("#generation"),
+		alive: document.querySelector("#alive")
+	};
 }
 
 Game.prototype.start = function(){
@@ -252,25 +263,17 @@ Game.prototype.display = function(){
 		}
 	}
 
-	this.ctx.fillStyle = "#FFC600";
-	this.ctx.strokeStyle = "#CE9E00";
+	// Keep the hull aligned to the existing 40 x 30 collision box.
 	for(var i in this.birds){
 		if(this.birds[i].alive){
-			this.ctx.save(); 
-			this.ctx.translate(this.birds[i].x + this.birds[i].width/2, this.birds[i].y + this.birds[i].height/2);
-			this.ctx.rotate(Math.PI/2 * this.birds[i].gravity/20);
-			this.ctx.drawImage(images.bird, -this.birds[i].width/2, -this.birds[i].height/2, this.birds[i].width, this.birds[i].height);
-			this.ctx.restore();
+			this.ctx.drawImage(images.bird, this.birds[i].x, this.birds[i].y, this.birds[i].width, this.birds[i].height);
 		}
 	}
 
-	this.ctx.fillStyle = "white";
-	this.ctx.font="20px Oswald, sans-serif";
-	this.ctx.fillText("Score : "+ this.score, 10, 25);
-	this.ctx.fillText("Max Score : "+this.maxScore, 10, 50);
-	this.ctx.fillText("Generation : "+this.generation, 10, 75);
-	this.ctx.fillText("Alive : "+this.alives+" / "+Neuvol.options.population, 10, 100);
-
+	this.telemetry.score.textContent = this.score;
+	this.telemetry.best.textContent = this.maxScore;
+	this.telemetry.generation.textContent = this.generation;
+	this.telemetry.alive.textContent = this.alives + " / " + Neuvol.options.population;
 	var self = this;
 	requestAnimationFrame(function(){
 		self.display();
@@ -279,10 +282,10 @@ Game.prototype.display = function(){
 
 window.onload = function(){
 	var sprites = {
-		bird:"./img/bird.png",
-		background:"./img/background.png",
-		pipetop:"./img/pipetop.png",
-		pipebottom:"./img/pipebottom.png"
+		bird:"./img/orbital-bird.svg",
+		background:"./img/orbital-background.svg",
+		pipetop:"./img/orbital-pipetop.svg",
+		pipebottom:"./img/orbital-pipebottom.svg"
 	}
 
 	var start = function(){
