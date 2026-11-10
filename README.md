@@ -4,6 +4,14 @@ Program that learns to play Flappy Bird by machine learning ([Neuroevolution](ht
 
 ![alt tag](https://github.com/xviniette/FlappyLearning/blob/gh-pages/img/flappy.png?raw=true)
 
+### Demo controls
+
+Open `index.html` in a browser. Use x1, x2, x3, x5 or MAX to select the simulation speed.
+
+Use **Pause** to freeze the simulation and learning, including at MAX speed. **Resume** continues from the same state without restarting or catching up elapsed time. Speed controls remain usable while paused; the selected speed applies on resume.
+
+The Pause/Resume button becomes available when the sprites finish loading. Reach it with Tab (with a visible focus outline) and activate it with Enter or Space.
+
 ### [NeuroEvolution.js](http://github.com/xviniette/FlappyLearning/blob/gh-pages/Neuroevolution.js) : Utilization
 ```javascript
 // Initialize

@@ -137,6 +137,10 @@ var Game = function(){
 	this.backgroundSpeed = 0.5;
 	this.backgroundx = 0;
 	this.maxScore = 0;
+	this.paused = false;
+	this.updatePending = false;
+	this.updateTimer = null;
+	this.loopVersion = 0;
 }
 
 Game.prototype.start = function(){
@@ -154,7 +158,48 @@ Game.prototype.start = function(){
 	this.alives = this.birds.length;
 }
 
+Game.prototype.setPaused = function(paused){
+	if(this.paused == paused){
+		return;
+	}
+	this.paused = paused;
+	// Invalidate queued MAX messages as well as cancellable timers.
+	this.loopVersion++;
+	clearTimeout(this.updateTimer);
+	this.updateTimer = null;
+	this.updatePending = false;
+	document.querySelector("#pause").textContent = paused ? "Resume" : "Pause";
+	if(!paused){
+		this.scheduleUpdate();
+	}
+}
+
+Game.prototype.scheduleUpdate = function(){
+	if(this.paused || this.updatePending){
+		return;
+	}
+	var self = this;
+	var version = this.loopVersion;
+	this.updatePending = true;
+	var callback = function(){
+		if(self.paused || version != self.loopVersion){
+			return;
+		}
+		self.updatePending = false;
+		self.updateTimer = null;
+		self.update();
+	}
+	if(FPS == 0){
+		setZeroTimeout(callback);
+	}else{
+		this.updateTimer = setTimeout(callback, 1000/FPS);
+	}
+}
+
 Game.prototype.update = function(){
+	if(this.paused){
+		return;
+	}
 	this.backgroundx += this.backgroundSpeed;
 	var nextHoll = 0;
 	if(this.birds.length > 0){
@@ -215,17 +260,7 @@ Game.prototype.update = function(){
 
 	this.score++;
 	this.maxScore = (this.score > this.maxScore) ? this.score : this.maxScore;
-	var self = this;
-
-	if(FPS == 0){
-		setZeroTimeout(function(){
-			self.update();
-		});
-	}else{
-		setTimeout(function(){
-			self.update();
-		}, 1000/FPS);
-	}
+	this.scheduleUpdate();
 }
 
 
@@ -291,6 +326,7 @@ window.onload = function(){
 			network:[2, [2], 1],
 		});
 		game = new Game();
+		document.querySelector("#pause").disabled = false;
 		game.start();
 		game.update();
 		game.display();
