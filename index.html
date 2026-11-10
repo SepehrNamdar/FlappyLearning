@@ -1,26 +1,75 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>NeuroEvolution : Flappy Bird</title>
-	<link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Orbital Flight Lab · Flappy Learning</title>
+	<link rel="icon" href="img/orbital-bird.svg" type="image/svg+xml">
 	<style>
-		#pause:focus-visible {
-			outline: 3px solid #005fcc;
-			outline-offset: 2px;
-		}
+		:root { color-scheme: dark; --cyan: #73e9ed; --muted: #a4b8ca; }
+		* { box-sizing: border-box; }
+		body { margin: 0; background: #070e1c; color: #edf5fc; font: 15px/1.5 system-ui, sans-serif; }
+		main { width: min(100% - 32px, 760px); margin: 42px auto; }
+		.eyebrow { margin: 0 0 8px; color: var(--cyan); font: 12px/1.5 monospace; letter-spacing: .18em; text-transform: uppercase; }
+		h1 { margin: 0; font-size: clamp(27px, 5vw, 38px); letter-spacing: -.04em; }
+		.intro { margin: 8px 0 25px; color: var(--muted); }
+		.lab { border: 1px solid #324a62; border-radius: 16px; overflow: hidden; background: #101d2e; box-shadow: 0 24px 70px #0005; }
+		.lab-heading { display: flex; justify-content: space-between; gap: 12px; padding: 14px 20px; border-bottom: 1px solid #324a62; font: 11px/1.5 monospace; letter-spacing: .12em; text-transform: uppercase; }
+		.lab-heading span:last-child { color: var(--cyan); }
+		.metrics { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0; padding: 18px 20px; gap: 12px; }
+		dt { color: var(--muted); font: 10px/1.5 monospace; text-transform: uppercase; letter-spacing: .12em; }
+		dd { margin: 5px 0 0; font: 23px/1.2 monospace; font-variant-numeric: tabular-nums; }
+		.viewport { position: relative; width: min(100%, 502px); margin: 0 auto; border: 1px solid #456077; background: #080f20; }
+		canvas { display: block; width: 100%; height: auto; }
+		.controls { padding: 20px; }
+		.controls-label { display: flex; justify-content: space-between; color: var(--muted); font: 11px/1.5 monospace; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
+		.speed-controls { display: flex; gap: 8px; }
+		button { flex: 1; min-height: 43px; border: 1px solid #4c647b; border-radius: 7px; color: #dce9f5; background: #1a2b40; font: bold 13px monospace; cursor: pointer; }
+		button:hover { border-color: var(--cyan); background: #233c51; }
+		button[aria-pressed="true"] { color: #07131c; background: var(--cyan); border-color: var(--cyan); }
+		button:focus-visible, a:focus-visible { outline: 3px solid #ffcd78; outline-offset: 4px; }
+		.hint { margin: 12px 0 0; color: var(--muted); font-size: 12px; }
+		footer { margin-top: 18px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+		a { color: var(--cyan); text-underline-offset: 3px; }
+		.pause-control { width: 100%; margin-top: 12px; }
+		.pause-overlay { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; background: #070e1ce8; color: #edf5fc; }
+		.pause-overlay[hidden] { display: none; }
+		@media (max-width: 480px) { main { margin: 24px auto; } .metrics { padding: 16px 12px; gap: 8px; } dd { font-size: 19px; } dt { font-size: 9px; letter-spacing: 0; } .lab-heading { padding: 12px; letter-spacing: .04em; } .controls { padding: 16px 12px; } }
 	</style>
 </head>
 <body>
-	<canvas id="flappy" width="500" height="512"></canvas> <br/>
-	<button onclick="speed(60)">x1</button> 
-	<button onclick="speed(120)">x2</button> 
-	<button onclick="speed(180)">x3</button> 
-	<button onclick="speed(300)">x5</button> 
-	<button onclick="speed(0)">MAX</button> 
-	<button id="pause" type="button" aria-controls="flappy" onclick="game.setPaused(!game.paused)" disabled>Pause</button>
-	<br/>
-	<a href="http://github.com/xviniette/FlappyLearning">GitHub Repository</a>
-	<script src = "Neuroevolution.js"></script>
-	<script src = "game.js"></script>
+	<main>
+		<p class="eyebrow">Neuroevolution / Experiment 01</p>
+		<h1>Orbital Flight Lab</h1>
+		<p class="intro">Fifty flight agents. One orbital course. Learning through every generation.</p>
+		<section class="lab" aria-label="Autonomous flight simulation">
+			<div class="lab-heading"><span>Station 07 / Flight telemetry</span><span>Autonomous training</span></div>
+			<dl class="metrics">
+				<div><dt>Score</dt><dd id="score">0</dd></div>
+				<div><dt>Best score</dt><dd id="best-score">0</dd></div>
+				<div><dt>Generation</dt><dd id="generation">0</dd></div>
+				<div><dt>Agents alive</dt><dd id="alive">0 / 50</dd></div>
+			</dl>
+			<div class="viewport">
+				<canvas id="flappy" width="500" height="512" role="img" aria-label="Robotic flight agents learning to navigate amber-rimmed station conduits"></canvas>
+				<div id="pause-overlay" class="pause-overlay" role="status" hidden><strong>Training paused</strong><span>Resume to continue this flight.</span></div>
+			</div>
+			<div class="controls">
+				<div class="controls-label"><span>Simulation speed</span><span id="speed-label">1× / Real time</span></div>
+				<div class="speed-controls" role="group" aria-label="Simulation speed">
+					<button onclick="speed(60)" data-fps="60" aria-pressed="true">x1</button>
+					<button onclick="speed(120)" data-fps="120" aria-pressed="false">x2</button>
+					<button onclick="speed(180)" data-fps="180" aria-pressed="false">x3</button>
+					<button onclick="speed(300)" data-fps="300" aria-pressed="false">x5</button>
+					<button onclick="speed(0)" data-fps="0" aria-pressed="false">MAX</button>
+				</div>
+				<button id="pause" class="pause-control" type="button" aria-controls="flappy" onclick="game.setPaused(!game.paused)" disabled>Pause</button>
+				<p class="hint">Cyan flight agents · Amber conduit boundaries · MAX runs training as fast as possible. Pause freezes flight and learning.</p>
+			</div>
+		</section>
+		<footer><span>Flappy Learning / Orbital Flight Lab</span><a href="http://github.com/xviniette/FlappyLearning">Original project by xviniette ↗</a></footer>
+	</main>
+	<script src="Neuroevolution.js"></script>
+	<script src="game.js"></script>
 </body>
 </html>

@@ -42,3 +42,22 @@ ne.networkScore(generation[x], <score = 0>);
 ```
 
 You can see the NeuroEvolution integration in Flappy Bird in [Game.js](http://github.com/xviniette/FlappyLearning/blob/gh-pages/game.js).
+
+### Orbital Flight Lab
+
+Open `index.html` directly in a browser; no installation or build is needed.
+The navy, cyan and amber interface shows score (simulation ticks survived), best
+score, generation and agents alive above the course. Use x1, x2, x3 or x5 to
+change training speed; MAX runs training as fast as possible. The selected speed
+is highlighted and buttons support keyboard focus and activation.
+
+The canvas remains 500 × 512 simulation units, scaled proportionally on small
+screens. Robotic hulls stay aligned with the existing 40 × 30 bird collision
+boxes; station conduits retain the existing 50-unit obstacle width and gap.
+The starfield scrolls with simulation updates. Physics, network inputs, evolution
+are unchanged. Pause/Resume uses guarded scheduling to freeze flight and learning,
+with a themed pause control and overlay. The selected speed applies on resume.
+
+The original PNG artwork, project link and `License` are preserved. New local
+`img/orbital-*.svg` artwork is authored for this project and provided under the
+same project license. No external fonts or image services are required.
